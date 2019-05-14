@@ -1,4 +1,5 @@
 // WITH_RUNTIME
+// KJS_WITH_FULL_RUNTIME
 // IGNORE_BACKEND: JS_IR
 fun foo(): Array<Boolean> {
     return arrayOf(
