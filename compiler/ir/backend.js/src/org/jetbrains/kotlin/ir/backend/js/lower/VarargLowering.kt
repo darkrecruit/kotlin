@@ -58,7 +58,7 @@ private class VarargTransformer(
     fun IrExpression.unboxInlineClassIfNeeded(): IrExpression {
         val inlinedClass = type.getInlinedClass() ?: return this
         val field = getInlineClassBackingField(inlinedClass)
-        return IrGetFieldImpl(startOffset, endOffset, field.symbol, inlinedClass.defaultType, this)
+        return IrGetFieldImpl(startOffset, endOffset, field.symbol, field.type, this)
     }
 
     fun IrExpression.boxInlineClassIfNeeded(inlineClass: IrClass?) =
@@ -123,14 +123,17 @@ private class VarargTransformer(
         if (segments.size == 1) {
             return if (expression.elements.any { it is IrSpreadElement }) {
                 // Single spread operator => need to copy the array
-                IrCallImpl(
+                val segment = segments.first()
+                val sliceResult = IrCallImpl(
                     expression.startOffset,
                     expression.endOffset,
                     expression.type,
                     context.intrinsics.jsArraySlice
                 ).apply {
-                    putValueArgument(0, segments.first())
+                    putTypeArgument(0, expression.type)
+                    putValueArgument(0, segment)
                 }
+                if (needUnboxing) sliceResult.boxInlineClassIfNeeded(arrayInlineClass!!) else sliceResult
             } else {
                 val res = segments.first()
                 return if (needUnboxing)
