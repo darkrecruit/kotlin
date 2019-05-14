@@ -6,17 +6,17 @@
 package org.jetbrains.kotlin.idea.core.script.dependencies
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.idea.core.script.scriptDependencies
+import org.jetbrains.kotlin.psi.KtFile
 
 class FromFileAttributeScriptDependenciesLoader(project: Project) : ScriptDependenciesLoader(project) {
 
-    override fun isApplicable(file: VirtualFile): Boolean {
-        return file.scriptDependencies != null
+    override fun isApplicable(file: KtFile): Boolean {
+        return file.virtualFile.scriptDependencies != null
     }
 
-    override fun loadDependencies(file: VirtualFile) {
-        val deserializedDependencies = file.scriptDependencies ?: return
+    override fun loadDependencies(file: KtFile) {
+        val deserializedDependencies = file.virtualFile.scriptDependencies ?: return
         saveToCache(file, deserializedDependencies)
     }
 

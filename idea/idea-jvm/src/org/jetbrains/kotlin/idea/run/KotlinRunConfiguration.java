@@ -109,23 +109,23 @@ public class KotlinRunConfiguration extends JetRunConfiguration implements Confi
         super.readExternal(element);
 
         JavaRunConfigurationExtensionManagerUtil.getInstance().readExternal(this, element);
+        setShortenCommandLine(ShortenCommandLine.readShortenClasspathMethod(element));
         DefaultJDOMExternalizer.readExternal(this, element);
 
         readModule(element);
         EnvironmentVariablesComponent.readExternal(element, getEnvs());
-        setShortenCommandLine(ShortenCommandLine.readShortenClasspathMethod(element));
     }
 
     @Override
     public void writeExternal(Element element) throws WriteExternalException {
         super.writeExternal(element);
         JavaRunConfigurationExtensionManagerUtil.getInstance().writeExternal(this, element);
+        ShortenCommandLine.writeShortenClasspathMethod(element, SHORTEN_COMMAND_LINE);
         DefaultJDOMExternalizer.writeExternal(this, element);
 
         writeModule(element);
         EnvironmentVariablesComponent.writeExternal(element, getEnvs());
         PathMacroManager.getInstance(getProject()).collapsePathsRecursively(element);
-        ShortenCommandLine.writeShortenClasspathMethod(element, SHORTEN_COMMAND_LINE);
     }
 
     @Override
