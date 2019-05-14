@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.backend.common.lower.*
 import org.jetbrains.kotlin.backend.common.lower.loops.forLoopsPhase
 import org.jetbrains.kotlin.backend.common.phaser.*
 import org.jetbrains.kotlin.backend.jvm.lower.*
+import org.jetbrains.kotlin.codegen.OwnerKind
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.util.PatchDeclarationParentsVisitor
 import org.jetbrains.kotlin.ir.visitors.acceptVoid
@@ -50,10 +51,10 @@ private val expectDeclarationsRemovingPhase = makeIrFilePhase(
     description = "Remove expect declaration from module fragment"
 )
 
-private val propertiesPhase = makeIrFilePhase<CommonBackendContext>(
+private val propertiesPhase = makeIrFilePhase<JvmBackendContext>(
     { context ->
-        PropertiesLowering(context, JvmLoweredDeclarationOrigin.SYNTHETIC_METHOD_FOR_PROPERTY_ANNOTATIONS) { propertyName ->
-            JvmAbi.getSyntheticMethodNameForAnnotatedProperty(propertyName)
+        PropertiesLowering(context, JvmLoweredDeclarationOrigin.SYNTHETIC_METHOD_FOR_PROPERTY_ANNOTATIONS) { getter ->
+            JvmAbi.getSyntheticMethodNameForAnnotatedProperty(context.typeMapper.mapFunctionName(getter, OwnerKind.IMPLEMENTATION))
         }
     },
     name = "Properties",
